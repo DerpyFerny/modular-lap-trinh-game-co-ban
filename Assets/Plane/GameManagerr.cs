@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class GameManagerr : MonoBehaviour
 {
+    [Header("Difficulty Settings")]
+    [SerializeField] private int startingDangerTiles = 5; // Số ô đỏ ở hiệp 1
+    [SerializeField] private int tilesIncreasePerRound = 2; // Mỗi hiệp tăng thêm mấy ô
+    [SerializeField] private int maxDangerTiles = 60; // Giới hạn tối đa (bàn cờ có 64 ô, chừa lại ít nhất vài ô sống sót)
+
+    private int currentDangerTiles; // Biến lưu số lượng ô đỏ của hiệp hiện tại
     [SerializeField] private Transform player;
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private int gridSize = 8;
@@ -18,6 +24,7 @@ public class GameManagerr : MonoBehaviour
     void Start()
     {
         GenerateChessboard();
+        currentDangerTiles = startingDangerTiles;
         StartCoroutine(GameLoop()); // Bắt đầu vòng lặp game
     }
 
@@ -43,53 +50,58 @@ public class GameManagerr : MonoBehaviour
         Debug.Log("Game bắt đầu sau 3 giây...");
         yield return new WaitForSeconds(3f);
 
-        while (true) // Lặp lại các lượt chơi liên tục
+        while (true) 
         {
             dangerZones.Clear();
             ResetTileColors();
 
-            // 1. Chọn ngẫu nhiên 15 ô sẽ sáng lên
-            for (int i = 0; i < 50; i++)
+            
+            //random range
+            while (dangerZones.Count < currentDangerTiles)
             {
                 Vector2 randomPos = new Vector2(Random.Range(0, gridSize), Random.Range(0, gridSize));
-                if (!dangerZones.Contains(randomPos))
+
+                                if (!dangerZones.Contains(randomPos))
                 {
                     dangerZones.Add(randomPos);
-                    tiles[randomPos].color = Color.red; // Sáng Đỏ
+                    tiles[randomPos].color = new Color(1f, 0.5f, 0.5f); // Sáng Đỏ
                 }
             }
 
-            // 2. Hiện màu đỏ trong 1.5 giây để Player ghi nhớ
-            yield return new WaitForSeconds(1.5f);
+            
+            yield return new WaitForSeconds(1f);
 
-            // 3. TẮT SÁNG (Trả về màu caro bình thường)
+            
             ResetTileColors();
 
-            // 4. Cho người chơi 2 giây để di chuyển thoát thân
-            Debug.Log("Di chuyển đi!");
-            yield return new WaitForSeconds(2f);
+            
+            Debug.Log("Move, bro");
+            yield return new WaitForSeconds(1.5f);
 
             // 5. KIỂM TRA ĐIỂM
             Vector2 playerPos = new Vector2(Mathf.Round(player.position.x), Mathf.Round(player.position.y));
 
             if (dangerZones.Contains(playerPos))
             {
-                Debug.Log("BẠN ĐÃ ĐẠP VÀO Ô SÁNG! GAME OVER!");
+                Debug.Log("GAME OVER!");
                 yield break; // Kết thúc Game
             }
             else
             {
+                // increase difficulty
+                currentDangerTiles += tilesIncreasePerRound;
+                currentDangerTiles = Mathf.Min(currentDangerTiles, maxDangerTiles);
                 score += 10;
-                Debug.Log("An toàn! Điểm hiện tại: " + score);
+                Debug.Log("Safe, Point: " + score);
             }
 
-            // 6. Hiển thị lại các ô đã sáng để chứng minh Player đứng đúng
+            
             foreach (Vector2 pos in dangerZones)
             {
-                tiles[pos].color = new Color(1f, 0.5f, 0.5f); // Đỏ nhạt
+                tiles[pos].color = Color.red; // Đỏ nhạt
             }
 
-            // Đợi 1 giây rồi bắt đầu lượt mới
+            
             yield return new WaitForSeconds(1f);
         }
     }
@@ -99,7 +111,7 @@ public class GameManagerr : MonoBehaviour
         foreach (var kvp in tiles)
         {
             Vector2 pos = kvp.Key;
-            // Thuật toán kiểm tra ô chẵn lẻ để làm màu caro
+            
             bool isOffset = (pos.x + pos.y) % 2 == 1;
             kvp.Value.color = isOffset ? new Color(0.8f, 0.8f, 0.8f) : Color.white;
         }
