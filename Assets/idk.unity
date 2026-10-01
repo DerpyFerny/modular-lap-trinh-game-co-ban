@@ -251,6 +251,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f073225d01bedf42975e0450b7b5cc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startingDangerTiles: 50
+  tilesIncreasePerRound: 2
+  maxDangerTiles: 63
   player: {fileID: 23652242}
   tilePrefab: {fileID: 1227485096}
   gridSize: 8

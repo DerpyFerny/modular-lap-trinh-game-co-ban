@@ -16,11 +16,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move(Vector2 direction)
     {
-        // Tính toán vị trí mới
+        
         Vector2 newPos = (Vector2)transform.position + (direction * gridSize);
 
-        // Ép làm tròn số để TUYỆT ĐỐI không bị lệch
-        // Đồng thời Clamp (khóa) không cho đi ra khỏi bàn cờ
+        // clamp => no going out of the board
         newPos.x = Mathf.Clamp(Mathf.Round(newPos.x), minBounds.x, maxBounds.x);
         newPos.y = Mathf.Clamp(Mathf.Round(newPos.y), minBounds.y, maxBounds.y);
 

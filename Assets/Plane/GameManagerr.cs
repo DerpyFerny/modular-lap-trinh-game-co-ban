@@ -5,18 +5,18 @@ using UnityEngine;
 public class GameManagerr : MonoBehaviour
 {
     [Header("Difficulty Settings")]
-    [SerializeField] private int startingDangerTiles = 5; // Số ô đỏ ở hiệp 1
-    [SerializeField] private int tilesIncreasePerRound = 2; // Mỗi hiệp tăng thêm mấy ô
-    [SerializeField] private int maxDangerTiles = 60; // Giới hạn tối đa (bàn cờ có 64 ô, chừa lại ít nhất vài ô sống sót)
+    [SerializeField] private int startingDangerTiles = 5; 
+    [SerializeField] private int tilesIncreasePerRound = 2; 
+    [SerializeField] private int maxDangerTiles = 60; 
 
-    private int currentDangerTiles; // Biến lưu số lượng ô đỏ của hiệp hiện tại
+    private int currentDangerTiles; 
     [SerializeField] private Transform player;
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private int gridSize = 8;
 
-    // Lưu trữ các ô vuông trên bàn cờ
+    // normal chess
     private Dictionary<Vector2, SpriteRenderer> tiles = new Dictionary<Vector2, SpriteRenderer>();
-    // Lưu các ô nguy hiểm (đã sáng lên)
+    // Lava
     private List<Vector2> dangerZones = new List<Vector2>();
 
     private int score = 0;
@@ -25,7 +25,7 @@ public class GameManagerr : MonoBehaviour
     {
         GenerateChessboard();
         currentDangerTiles = startingDangerTiles;
-        StartCoroutine(GameLoop()); // Bắt đầu vòng lặp game
+        StartCoroutine(GameLoop()); 
     }
 
     void GenerateChessboard()
@@ -37,12 +37,12 @@ public class GameManagerr : MonoBehaviour
                 Vector2 pos = new Vector2(x, y);
                 GameObject tile = Instantiate(tilePrefab, pos, Quaternion.identity);
 
-                // Sơn màu caro (Trắng và Xám)
+                // chessboard
                 SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
                 tiles.Add(pos, sr);
             }
         }
-        ResetTileColors(); // Cập nhật màu xen kẽ
+        ResetTileColors(); //reset board
     }
 
     IEnumerator GameLoop()
@@ -78,13 +78,13 @@ public class GameManagerr : MonoBehaviour
             Debug.Log("Move, bro");
             yield return new WaitForSeconds(1.5f);
 
-            // 5. KIỂM TRA ĐIỂM
+            // score check
             Vector2 playerPos = new Vector2(Mathf.Round(player.position.x), Mathf.Round(player.position.y));
 
             if (dangerZones.Contains(playerPos))
             {
                 Debug.Log("GAME OVER!");
-                yield break; // Kết thúc Game
+                yield break; 
             }
             else
             {
@@ -98,7 +98,7 @@ public class GameManagerr : MonoBehaviour
             
             foreach (Vector2 pos in dangerZones)
             {
-                tiles[pos].color = Color.red; // Đỏ nhạt
+                tiles[pos].color = Color.red; 
             }
 
             
